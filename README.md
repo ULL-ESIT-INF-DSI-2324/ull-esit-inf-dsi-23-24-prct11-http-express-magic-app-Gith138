@@ -42,7 +42,10 @@ npm i --save-dev c8
 
 
 ### Cliente    
-
+Para los tests se usara el paquete ``request`:
+```ts
+npm install request --save-dev
+```
 
 ### Dificultades      
 Esta práctica ha sido complicada, porque me ha resultado difícil entender bien el funcionamiento de los distintos paquetes y como usar el `Módulo Net`

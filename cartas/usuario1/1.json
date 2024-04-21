@@ -1,4 +1,10 @@
 {
   "id": 1,
-  "nombre": "Carta de prueba actualizada"
+  "nombre": "Jeje",
+  "coste_mana": 50,
+  "color": "verde",
+  "tipo": "Criatura",
+  "rareza": "Rara",
+  "texto_reglas": "Nuevas reglas",
+  "valor_mercado": 500
 }

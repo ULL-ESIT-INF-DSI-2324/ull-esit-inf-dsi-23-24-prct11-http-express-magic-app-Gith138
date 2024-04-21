@@ -1,3 +1,7 @@
+/**
+ * Servidor Express para la aplicación de Magic Cards.
+ */
+
 import express from 'express';
 import { Cartas } from './magic-app.js';
 import { ColeccionCartas } from './cartas.js';
@@ -8,7 +12,12 @@ const coleccionCartas = new ColeccionCartas();
 
 app.use(express.json());
 
-// Ruta para agregar una carta a la colección de un usuario
+/**
+ * Ruta para agregar una carta a la colección de un usuario.
+ * 
+ * @param req - La solicitud HTTP.
+ * @param res - La respuesta HTTP.
+ */
 app.post('/usuarios/:usuario/cartas', (req, res) => {
   const carta = req.body;
   const usuario = req.params.usuario;
@@ -22,8 +31,13 @@ app.post('/usuarios/:usuario/cartas', (req, res) => {
   });
 });
 
-// Ruta para actualizar una carta en la colección de un usuario
-app.put('/usuarios/:usuario/cartas/:id', (req, res) => {
+/**
+ * Ruta para actualizar una carta en la colección de un usuario.
+ * 
+ * @param req - La solicitud HTTP.
+ * @param res - La respuesta HTTP.
+ */
+app.patch('/usuarios/:usuario/cartas/:id', (req, res) => {
   const carta = req.body;
   const usuario = req.params.usuario;
   const id = parseInt(req.params.id);
@@ -37,7 +51,12 @@ app.put('/usuarios/:usuario/cartas/:id', (req, res) => {
   });
 });
 
-// Ruta para eliminar una carta de la colección de un usuario
+/**
+ * Ruta para eliminar una carta de la colección de un usuario.
+ * 
+ * @param req - La solicitud HTTP.
+ * @param res - La respuesta HTTP.
+ */
 app.delete('/usuarios/:usuario/cartas/:id', (req, res) => {
   const usuario = req.params.usuario;
   const id = parseInt(req.params.id);
@@ -51,7 +70,12 @@ app.delete('/usuarios/:usuario/cartas/:id', (req, res) => {
   });
 });
 
-// Ruta para listar todas las cartas de un usuario
+/**
+ * Ruta para listar todas las cartas de un usuario.
+ * 
+ * @param req - La solicitud HTTP.
+ * @param res - La respuesta HTTP.
+ */
 app.get('/usuarios/:usuario/cartas', (req, res) => {
   const usuario = req.params.usuario;
 
@@ -64,7 +88,12 @@ app.get('/usuarios/:usuario/cartas', (req, res) => {
   });
 });
 
-// Ruta para mostrar los detalles de una carta específica de un usuario
+/**
+ * Ruta para mostrar los detalles de una carta específica de un usuario.
+ * 
+ * @param req - La solicitud HTTP.
+ * @param res - La respuesta HTTP.
+ */
 app.get('/usuarios/:usuario/cartas/:id', (req, res) => {
   const usuario = req.params.usuario;
   const id = parseInt(req.params.id);

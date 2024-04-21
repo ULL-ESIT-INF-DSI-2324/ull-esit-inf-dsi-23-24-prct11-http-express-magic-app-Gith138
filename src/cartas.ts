@@ -1,70 +1,150 @@
-/**
- * Enumeración de los colores de las cartas.
- */
-export enum Color {
-    Blanco = "Blanco",
-    Azul = "Azul",
-    Negro = "Negro",
-    Rojo = "Rojo",
-    Verde = "Verde",
-    Incoloro = "Incoloro",
-    Multicolor = "Multicolor"
-  }
-  
-  /**
-   * Enumeración de los tipos de las cartas.
-   */
-  export enum Tipo {
-    Tierra = "Tierra",
-    Criatura = "Criatura",
-    Encantamiento = "Encantamiento",
-    Conjuro = "Conjuro",
-    Instantaneo = "Instantaneo",
-    Artefacto = "Artefacto",
-    Planeswalker = "Planeswalker"
-  }
-  
-  /**
-   * Enumeración de las rarezas de las cartas.
-   */
-  export enum Rareza {
-    Comun = "Comun",
-    Infrecuente = "Infrecuente",
-    Rara = "Rara",
-    Mitica = "Mitica"
-  }
-  
-  /**
-   * Representa una carta del juego.
-   */
-  export class Cartas {
+import fs from 'fs';
+import { Cartas } from './magic-app.js';
+
+export class ColeccionCartas {
+	private coleccion: Cartas[] = [];
     /**
-     * Crea una instancia de la clase Cartas.
-     * @param id - El identificador de la carta.
-     * @param nombre - El nombre de la carta.
-     * @param coste_mana - El coste de mana de la carta.
-     * @param color - El color de la carta.
-     * @param tipo - El tipo de la carta.
-     * @param rareza - La rareza de la carta.
-     * @param texto_reglas - El texto de las reglas de la carta.
-     * @param valor_mercado - El valor de mercado de la carta.
-     * @param fuerza_resistencia - La fuerza y resistencia de la carta (solo para cartas de tipo Criatura).
-     * @param marcas_lealtad - Las marcas de lealtad de la carta (solo para cartas de tipo Planeswalker).
+     * Agrega una carta a la colección.
+     * @param {Object} carta - La carta a agregar.
+     * @param {string} usuario - El nombre del usuario.
+     * @param {function} callback - La función de retorno de llamada que se ejecutará después de agregar la carta.
      */
-    constructor( public id: number, public nombre: string, public coste_mana: number, public color: Color, public tipo: Tipo, public rareza: Rareza, public texto_reglas: string, public valor_mercado: number, public fuerza_resistencia?: [number, number], public marcas_lealtad?: number) {
-      this.id = id;
-      this.nombre = nombre;
-      this.coste_mana = coste_mana;
-      this.color = color;
-      this.tipo = tipo;
-      this.rareza = rareza;
-      this.texto_reglas = texto_reglas;
-      this.valor_mercado = valor_mercado;
-      if (tipo === Tipo.Criatura) {
-        this.fuerza_resistencia = fuerza_resistencia;
-      }
-      if (tipo === Tipo.Planeswalker) {
-        this.marcas_lealtad = marcas_lealtad;
-      }
+    public AyadirCarta(carta: Cartas, usuario: string, callback: (err: string | undefined, mensaje: string | undefined) => void) {
+        const directorio_cartas = `./cartas/${usuario}`;
+        const RutaCarta = `${directorio_cartas}/${carta.id}.json`;
+
+        if (!fs.existsSync(directorio_cartas)) { // Verificar si no existe el directorio
+            fs.mkdir(directorio_cartas, { recursive: true }, (err) => {
+                if (err) {
+                    callback(`Error al crear el directorio: ${err}`, undefined);
+                } else {
+                    agregarCarta();
+                }
+            });
+        } else {
+            agregarCarta();
+        }
+
+        function agregarCarta() {
+            if (fs.existsSync(RutaCarta)) { // Verificar si la carta existe
+                callback(`La carta ya existe en la colección de ${usuario}!`, undefined);
+            } else { // Añadir la carta
+                fs.writeFile(RutaCarta, JSON.stringify(carta, undefined, 2), (err) => {
+                    if (err) {
+                        callback(`Error al añadir la carta: ${err}`, undefined);
+                    } else {
+                        callback(undefined, `Nueva carta añadida a la colección de ${usuario}!`);
+                    }
+                });
+            }
+        }
     }
-  }
+
+
+    /**
+     * Actualiza una carta en la colección.
+     * @param {Object} carta - La carta actualizada.
+     * @param {string} usuario - El nombre del usuario.
+     * @param {function} callback - La función de retorno de llamada que se ejecutará después de actualizar la carta.
+     */
+    public ActualizarCarta(carta: Cartas, usuario: string, callback: (err: string | undefined, mensaje: string | undefined) => void) {
+        const directorio_cartas = `./cartas/${usuario}`;
+        const RutaCarta = `${directorio_cartas}/${carta.id}.json`;
+
+        fs.access(RutaCarta, fs.constants.F_OK, (err) => {
+            if (err) { // Si hay un error, significa que la carta no existe
+                callback(`La carta no existe en la colección de ${usuario}!`, undefined);
+            } else {
+                fs.writeFile(RutaCarta, JSON.stringify(carta, undefined, 2), (err) => {
+                    if (err) {
+                        callback(`Error al actualizar la carta: ${err}`, undefined);
+                    } else {
+                        callback(undefined, `Carta actualizada en la colección de ${usuario}!`);
+                    }
+                });
+            }
+        });
+    }
+
+
+	/**
+	 * Elimina una carta de la colección.
+	 * @param id - El ID de la carta a eliminar.
+	 * @param usuario - El nombre del usuario.
+	 */
+    public EliminarCarta(id: number, usuario: string, callback: (err: string | undefined, mensaje: string | undefined) => void) {
+        const directorio_cartas = `./cartas/${usuario}`;
+        const RutaCarta = `${directorio_cartas}/${id}.json`;
+        fs.access(RutaCarta, fs.constants.F_OK, (err) => { // Verificar si la carta existe, usando fs.access con fs.constants.F_OK que es para verificar si el archivo existe.
+            if (err) { // Si hay un error, significa que la carta no existe
+                callback(`La carta no existe en la colección de ${usuario}!`, undefined);
+            } else {
+                fs.unlink(RutaCarta, (err) => { // borra la carta existente, sino muestra un error
+                    if (err) {
+                        callback(`Error al eliminar la carta: ${err}`, undefined);
+                    } else {
+                        callback(undefined, `Carta eliminada de la colección de ${usuario}!`);
+                    }
+                });
+            }
+        });
+      }
+
+    /**
+     * Lista las cartas de un usuario.
+     * @param {string} usuario - El nombre del usuario.
+     * @param {function} callback - La función de retorno de llamada que se ejecutará después de listar las cartas.
+     */
+    public ListarCartas(usuario: string, callback: (err: string | undefined, mensaje: string | undefined) => void) {
+        const directorio_cartas = `./cartas/${usuario}`;
+
+        fs.access(directorio_cartas, fs.constants.F_OK, (err) => {
+            if (err) { // Si hay un error, significa que el usuario no tiene una colección de cartas
+                callback(`${usuario} no tiene una colección de cartas`, undefined);
+            } else {
+                fs.readdir(directorio_cartas, (err, archivos) => {
+                    if (err) {
+                        callback(`Error al leer la colección de cartas de ${usuario}: ${err}`, undefined);
+                    } else {
+                        archivos.forEach((archivo) => {
+                            fs.readFile(`${directorio_cartas}/${archivo}`, (err, data) => {
+                                if (err) {
+                                    callback(`Error al leer el archivo ${archivo}: ${err}`, undefined);
+                                } else {
+                                    callback(undefined, data.toString());
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+
+    /**
+     * Muestra los detalles de una carta.
+     * @param {number} id - El ID de la carta.
+     * @param {string} usuario - El nombre del usuario.
+     * @param {function} callback - La función de retorno de llamada que se ejecutará después de mostrar la carta.
+     */
+    public MostrarCarta(id: number, usuario: string, callback: (err: string | undefined, mensaje: string | undefined) => void) {
+        const directorio_cartas = `./cartas/${usuario}`;
+        const RutaCarta = `${directorio_cartas}/${id}.json`;
+
+        fs.access(RutaCarta, fs.constants.F_OK, (err) => {
+            if (err) { // Si hay un error, significa que la carta no existe
+                callback(`Carta no encontrada en la colección de ${usuario}`, undefined);
+            } else {
+                fs.readFile(RutaCarta, (err, data) => {
+                    if (err) {
+                        callback(`Error al leer la carta: ${err}`, undefined);
+                    } else {
+                        callback(undefined, data.toString());
+                    }
+                });
+            }
+        });
+    }
+
+}

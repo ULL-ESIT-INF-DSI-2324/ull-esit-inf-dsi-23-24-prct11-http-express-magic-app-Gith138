@@ -39,6 +39,7 @@
     "emoji-regex": "^8.0.0",
     "escalade": "^3.1.2",
     "escape-string-regexp": "^4.0.0",
+    "express": "^4.19.2",
     "fill-range": "^7.0.1",
     "find-up": "^5.0.0",
     "flat": "^5.0.2",
@@ -93,6 +94,7 @@
     "yocto-queue": "^0.1.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "mocha": "^10.4.0"
   },
   "repository": {
